@@ -50,6 +50,7 @@ export default class LoginController {
 
   @Api.Summary('User logout')
   @Post('/logout')
+  @Contract(null, LoginResDTO)
   public async logout() {
     this.ctx.session.user = null;
     return {

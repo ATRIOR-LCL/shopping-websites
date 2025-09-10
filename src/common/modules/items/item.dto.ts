@@ -2,6 +2,12 @@ import { IsString, IsNumber, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class ItemDTO {
+  @IsNumber()
+  public itemId!: number;
+
+  @IsString()
+  public itemEmoji!: string;
+
   @IsString()
   public itemName!: string;
 
@@ -14,10 +20,13 @@ export class ItemDTO {
   public description?: string;
 }
 
-export class ItemReqDTO {}
+export class ItemReqDTO {
+  _t?: boolean;
+}
 
 export class ItemResDTO {
-  @Type(() => ItemDTO)
+  @IsNumber()
+  count: number;
   rows: ItemDTO[];
   success?: boolean;
   message?: string;

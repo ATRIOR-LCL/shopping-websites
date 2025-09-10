@@ -1,28 +1,78 @@
 <script lang="ts">
 import { Vue, Options } from 'vue-class-component';
-import { ElCard, ElButton } from 'element-plus';
+import { ElCard, ElButton, ElSlider } from 'element-plus';
+import { ClientOnly } from 'vite-ssr';
+import { Prop } from 'vue-property-decorator';
 
 @Options({
   components: {
     ElCard,
-    ElButton
+    ElButton,
+    ElSlider,
+    ClientOnly,
   },
 })
-export default class MyItem extends Vue {}
+export default class MyItem extends Vue {
+  @Prop() itemId!: number;
+  @Prop() itemEmoji!: string;
+  @Prop() itemName!: string;
+  @Prop() description!: string;
+  @Prop() price!: number;
+
+  state = {
+    quantity: 0,
+  };
+
+  handleChange(value: number) {
+    this.state.quantity = value;
+  }
+
+  addToCart() {
+    if (this.state.quantity > 0) {
+      const itemsToAdd = [];
+      for (let i = 0; i < this.state.quantity; i++) {
+        itemsToAdd.push({
+          itemId: this.itemId,
+          itemEmoji: this.itemEmoji,
+          itemName: this.itemName,
+          description: this.description,
+          price: this.price
+        });
+      }
+
+      // 向父组件发射事件，传递数量和商品信息
+      this.$emit('add-to-cart', {
+        quantity: this.state.quantity,
+        items: itemsToAdd
+      });
+
+      this.state.quantity = 0;
+
+      console.log(`Added ${this.state.quantity} items (${this.itemName}) to cart`);
+    }
+  }
+}
 </script>
 
 <template>
-    <el-card class="my-card" shadow="hover" style="width: 300px; height: 400px; margin: 20px;">
-      <div class="card-image">
-        🍞
-      </div>
+  <el-card class="my-card" shadow="hover" style="width: 300px; height: 400px; margin: 20px">
+    <template #header>
+      <div class="card-image">{{ itemEmoji }}</div>
+    </template>
+    <div class="card-desc">
+      <h3>{{ itemName }}</h3>
+      <p>{{ description }}</p>
+      <p>Price: ${{ price }}</p>
+    </div>
+    <template #footer>
       <div class="card-footer">
-        <h3>Item Title</h3>
-        <p>Item description goes here. This is a brief overview of the item.</p>
-        <p>Price: $99.99</p>
-        <el-button type="primary">Add to Cart</el-button>
+        <client-only>
+          <el-slider show-input v-model="this.state.quantity" size="small" :max="5" @input="handleChange" />
+          <el-button type="primary" :disabled="state.quantity === 0" @click="addToCart">Add to Cart</el-button>
+        </client-only>
       </div>
-    </el-card>
+    </template>
+  </el-card>
 </template>
 
 <style scoped lang="less">
@@ -33,18 +83,18 @@ export default class MyItem extends Vue {}
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  position: relative;
   & .card-image {
-    // width: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 60%;
-    background-color: #f0f0f0;
-    font-size: var(--font-large-size);
+    width: 220px;
+    height: 100px;
+    font-size: 50px;
   }
-  & .card-footer {
+
+  & .card-desc {
     width: 100%;
-    height: 40%;
     text-align: center;
     & h3 {
       margin: 10px 0 5px 0;
@@ -52,6 +102,11 @@ export default class MyItem extends Vue {}
     & p {
       margin: 5px 0;
     }
+  }
+
+  & .card-footer {
+    width: 220px;
+    text-align: center;
     & .el-button {
       margin-top: 10px;
     }

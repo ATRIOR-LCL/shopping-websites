@@ -7,6 +7,7 @@
 import { AllowedRequestMethod, IBwcxApiRequestAdaptorArgs, AbstractResponseParser } from 'bwcx-api-client';
 import { configure as configureUrlcat } from 'urlcat-fork';
 import { DemoGetReqDTO, DemoGetRespDTO } from '../modules/demo/demo.dto';
+import { ItemReqDTO, ItemResDTO } from '../modules/items/item.dto';
 import { LoginReqDTO, LoginResDTO } from '../modules/login/login.dto';
 
 const urlcat = configureUrlcat({ arrayFormat: 'repeat' });
@@ -35,6 +36,17 @@ export class ApiClient<T = undefined> {
   }
 
   /**
+   * Get all items
+   *
+   * @param {ItemReqDTO} req The request data (compatible with ReqDTO).
+   * @param {T} opts Extra request options.
+   * @returns {ItemResDTO} The response data (RespDTO).
+   */
+  public async getAllItems(req: ItemReqDTO, opts?: T): Promise<ItemResDTO> {
+    return this._r(this._rArgs.b(req, opts)).then((resp) => this._rp.pat(ItemResDTO, resp));
+  }
+
+  /**
    * User login
    *
    * @param {LoginReqDTO} req The request data (compatible with ReqDTO).
@@ -42,7 +54,18 @@ export class ApiClient<T = undefined> {
    * @returns {LoginResDTO} The response data (RespDTO).
    */
   public async login(req: LoginReqDTO, opts?: T): Promise<LoginResDTO> {
-    return this._r(this._rArgs.b(req, opts)).then((resp) => this._rp.pat(LoginResDTO, resp));
+    return this._r(this._rArgs.c(req, opts)).then((resp) => this._rp.pat(LoginResDTO, resp));
+  }
+
+  /**
+   * User logout
+   *
+   * @param {null} req The request data (compatible with ReqDTO).
+   * @param {T} opts Extra request options.
+   * @returns {LoginResDTO} The response data (RespDTO).
+   */
+  public async logout(req?: null, opts?: T): Promise<LoginResDTO> {
+    return this._r(this._rArgs.d(req, opts)).then((resp) => this._rp.pat(LoginResDTO, resp));
   }
 
   private _rArgs = {
@@ -68,7 +91,25 @@ export class ApiClient<T = undefined> {
         },
       };
     },
-    b: (req: LoginReqDTO, opts?: any) => {
+    b: (req: ItemReqDTO, opts?: any) => {
+      return {
+        method: 'GET' as AllowedRequestMethod,
+        url: this._uf('/api/items', {
+          param: {},
+          query: {},
+        }),
+        data: {},
+        extraOpts: opts,
+        metadata: {
+          name: 'getAllItems',
+          method: 'GET',
+          path: '/api/items',
+          req: ItemReqDTO,
+          resp: ItemResDTO,
+        },
+      };
+    },
+    c: (req: LoginReqDTO, opts?: any) => {
       return {
         method: 'POST' as AllowedRequestMethod,
         url: this._uf('/api/login', {
@@ -85,6 +126,24 @@ export class ApiClient<T = undefined> {
           method: 'POST',
           path: '/api/login',
           req: LoginReqDTO,
+          resp: LoginResDTO,
+        },
+      };
+    },
+    d: (req: null, opts?: any) => {
+      return {
+        method: 'POST' as AllowedRequestMethod,
+        url: this._uf('/api/logout', {
+          param: {},
+          query: {},
+        }),
+        data: {},
+        extraOpts: opts,
+        metadata: {
+          name: 'logout',
+          method: 'POST',
+          path: '/api/logout',
+          req: null as null,
           resp: LoginResDTO,
         },
       };
