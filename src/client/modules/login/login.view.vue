@@ -3,6 +3,7 @@ import { Vue, Options } from 'vue-class-component';
 import { View } from 'bwcx-client-vue3';
 import { ElForm, ElFormItem, ElInput, ElButton } from 'element-plus';
 import type { ApiClientType } from '@client/api';
+import MyFooter from '@client/components/my-footer.vue';
 
 @View('/login')
 @Options({
@@ -11,18 +12,17 @@ import type { ApiClientType } from '@client/api';
     ElFormItem,
     ElInput,
     ElButton,
+    MyFooter
   },
   inject: ['apiClient'],
 })
 export default class LoginView extends Vue {
-  // 声明注入的 apiClient
   declare apiClient: ApiClientType;
 
   state = {
     username: '',
     password: '',
   }
-
 
 
   handleReset() {
@@ -68,6 +68,7 @@ export default class LoginView extends Vue {
         </el-form-item>
       </el-form>
     </div>
+    <MyFooter/>
   </div>
 </template>
 
@@ -78,6 +79,7 @@ export default class LoginView extends Vue {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 
   & .login-container {
     width: 100%;
