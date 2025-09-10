@@ -12,21 +12,21 @@ export default class MyItem extends Vue {}
 </script>
 
 <template>
-    <el-card class="el-card" shadow="hover" style="width: 300px; height: 400px; margin: 20px;">
+    <el-card class="my-card" shadow="hover" style="width: 300px; height: 400px; margin: 20px;">
       <div class="card-image">
-        
+        🍞
       </div>
       <div class="card-footer">
         <h3>Item Title</h3>
         <p>Item description goes here. This is a brief overview of the item.</p>
         <p>Price: $99.99</p>
-        <el-button type="primary">Buy Now</el-button>
+        <el-button type="primary">Add to Cart</el-button>
       </div>
     </el-card>
 </template>
 
 <style scoped lang="less">
-.el-card {
+.my-card {
   width: 300px;
   height: 400px;
   display: flex;
@@ -34,7 +34,10 @@ export default class MyItem extends Vue {}
   justify-content: space-between;
   align-items: center;
   & .card-image {
-    width: 100%;
+    // width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 60%;
     background-color: #f0f0f0;
     font-size: var(--font-large-size);

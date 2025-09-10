@@ -3,12 +3,14 @@ import { Vue, Options } from 'vue-class-component';
 import { View, RenderMethod, RenderMethodKind } from 'bwcx-client-vue3';
 import MyFooter from '@client/components/my-footer.vue';
 import MyItem from '@client/components/item.vue';
+import Cart from '@client/components/cart.vue';
 
 @View('/')
 @Options({
   components: {
     MyFooter,
-    MyItem
+    MyItem,
+    Cart
   },
 })
 @RenderMethod(RenderMethodKind.SSR)
