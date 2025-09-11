@@ -10,7 +10,7 @@ import { ApiClient } from '@common/api/api-client';
   },
   inject: ['apiClient'],
 })
-export default class App extends Vue {
+export default class App23110501092 extends Vue {
   declare apiClient: ApiClient;
   appState = {
     isLoggedIn: false,
@@ -33,7 +33,6 @@ export default class App extends Vue {
     console.log('Session check response:', res);
   }
 
-  // 使用 watch 监听路由变化
   @Watch('$route')
   async onRouteChange(newRoute: any, oldRoute: any) {
     console.log('Route changed from', oldRoute?.path, 'to', newRoute?.path);
@@ -43,7 +42,6 @@ export default class App extends Vue {
   async mounted() {
     await this.checkSession();
 
-    // 添加路由守卫来监听路由变化
     this.$router.afterEach(async (to, from) => {
       console.log('Route changed from', from.path, 'to', to.path);
       await this.checkSession();

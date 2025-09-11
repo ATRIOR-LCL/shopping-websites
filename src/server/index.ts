@@ -23,7 +23,7 @@ import { IPageRenderer } from './lib/page-renderer.interface';
 import { BwcxClientVueClientRoutesMapId } from 'bwcx-client-vue/server';
 import { clientRoutesMap } from '@common/router/client-routes';
 
-export default class OurApp extends App {
+export default class OurApp23110501092 extends App {
   protected baseDir = path.join(__dirname, '..');
 
   protected scanGlobs = [
@@ -135,7 +135,7 @@ export default class OurApp extends App {
   }
 }
 
-const app = new OurApp();
+const app = new OurApp23110501092();
 app.scan();
 app.bootstrap().then(() => {
   app.start();
