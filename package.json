@@ -1,7 +1,7 @@
 {
-  "name": "bwcx-vue3-ssr-template",
+  "name": "shopping-websites",
   "version": "1.0.0",
-  "description": "",
+  "description": "基于 TypeScript 的购物网站项目",
   "main": "index.js",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
@@ -25,11 +25,11 @@
     "vite",
     "template"
   ],
-  "author": "bLue",
+  "author": "计科2303吴锦皓",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bwcxjs/bwcx-vue3-ssr-template.git"
+    "url": "git+https://github.com/ATRIOR-LCL/shopping-websites.git"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
