@@ -6,7 +6,7 @@ export default class MyFooter extends Vue {}
 
 <template>
   <footer class="my-footer">
-    Develop by 计科2303吴锦皓 <img src="../assets/atrior.png" class="atrior" alt="" /> 2025-09-10.
+    © 2025-09-10 · Developed by 计科2303吴锦皓 <img src="../assets/atrior.png" class="atrior" alt="" /> with ❤️.
   </footer>
 </template>
 

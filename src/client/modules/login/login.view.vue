@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Vue, Options } from 'vue-class-component';
 import { View } from 'bwcx-client-vue3';
-import { ElForm, ElFormItem, ElInput, ElButton } from 'element-plus';
+import { ElForm, ElFormItem, ElInput, ElButton, ElNotification } from 'element-plus';
 import type { ApiClientType } from '@client/api';
 import MyFooter from '@client/components/my-footer.vue';
 
@@ -12,7 +12,7 @@ import MyFooter from '@client/components/my-footer.vue';
     ElFormItem,
     ElInput,
     ElButton,
-    MyFooter
+    MyFooter,
   },
   inject: ['apiClient'],
 })
@@ -22,8 +22,7 @@ export default class LoginView extends Vue {
   state = {
     username: '',
     password: '',
-  }
-
+  };
 
   handleReset() {
     this.state.username = '';
@@ -40,13 +39,26 @@ export default class LoginView extends Vue {
 
       // 登录成功后跳转到首页
       if (res.success) {
+        ElNotification.success({
+          title: '登录成功',
+          message: '欢迎回来，' + this.state.username + '！',
+          duration: 1000
+        });
         this.$router.push('/');
       } else {
-        alert('Login failed: ' + res.message);
+        ElNotification.error({
+          title: '登录失败',
+          message: '请检查您的用户名和密码。',
+          duration: 1000
+        });
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert('Login failed: Network error');
+      ElNotification.error({
+        title: '登录失败',
+        message: '网络错误，请稍后再试。',
+        duration: 1000
+      });
     }
   }
 }
@@ -54,6 +66,7 @@ export default class LoginView extends Vue {
 
 <template>
   <div class="login-view">
+    <h1 class="login-title">Log in to start shopping 🤨</h1>
     <div class="login-container">
       <el-form style="max-width: 600px" status-icon label-width="auto">
         <el-form-item label="UserName" prop="username">
@@ -68,7 +81,7 @@ export default class LoginView extends Vue {
         </el-form-item>
       </el-form>
     </div>
-    <MyFooter/>
+    <MyFooter />
   </div>
 </template>
 
@@ -77,6 +90,7 @@ export default class LoginView extends Vue {
   width: 100%;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   position: relative;
@@ -88,6 +102,12 @@ export default class LoginView extends Vue {
     box-shadow: 0 0px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     background-color: #fff;
+  }
+  & .login-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: var(--font-large-size);
+    font-weight: bold;
   }
 }
 </style>

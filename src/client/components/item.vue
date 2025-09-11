@@ -84,13 +84,23 @@ export default class MyItem extends Vue {
   justify-content: space-between;
   align-items: center;
   position: relative;
+
+  &:hover {
+    .card-image {
+      transform: scale(1.1);
+    }
+  }
   & .card-image {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 220px;
     height: 100px;
-    font-size: 50px;
+    font-size: 60px;
+    transform: scale(1);
+    transition: transform 0.3s ease;
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    user-select: none;
   }
 
   & .card-desc {

@@ -27,7 +27,7 @@ export default class CartContainer extends Vue {
 
 <template>
   <div class="cart-container" v-if="visible">
-    <h2 style="text-align: center; color: #000;">Shopping Cart</h2>
+    <h2 style="text-align: center; color: #000; font-size: var(--font-large-size);">Shopping Cart 🛒</h2>
 
     <el-button
       style="

@@ -30,3 +30,9 @@ export class LoginResDTO {
   success?: boolean;
   message?: string;
 }
+
+export class SessionResDTO {
+  success?: boolean;
+  message?: string;
+  data: Object | null;
+}

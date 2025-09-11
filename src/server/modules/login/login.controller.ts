@@ -3,7 +3,7 @@ import { Inject } from 'bwcx-core';
 import LoginService from './login.service';
 import RandomGuard from '../../guards/random';
 import LoginMiddleware from '@server/middlewares/login.middleware';
-import { LoginReqDTO, LoginResDTO } from '@common/modules/login/login.dto';
+import { LoginReqDTO, LoginResDTO, SessionResDTO } from '@common/modules/login/login.dto';
 import { Api } from 'bwcx-api';
 import { ApiController } from '@server/decorators';
 
@@ -63,5 +63,20 @@ export default class LoginController {
   @UseGuards(RandomGuard)
   public secret() {
     return 'You have accessed a secret route!';
+  }
+
+  @Api.Summary('获取用户会话信息')
+  @Get('/getSession')
+  @Contract(null, SessionResDTO)
+  public getSession() {
+    if(this.ctx.session.user) {
+      return {
+        data: this.ctx.session.user
+      }
+    }else {
+      return {
+        data: null
+      }
+    }
   }
 }

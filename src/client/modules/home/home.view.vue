@@ -110,11 +110,11 @@ export default class HomeView extends Vue {
 
 <style scoped lang="less">
 .slide-fade-enter-active {
-  transition: all 0.3s ease-out;
+  transition: transform 0.3s ease-out, opacity 0.5s ease-out;
 }
 
 .slide-fade-leave-active {
-  transition: all 0.3s ease-in;
+  transition: transform 0.3s ease-in, opacity 0.5s ease-in;
 }
 
 .slide-fade-enter-from,

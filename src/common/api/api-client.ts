@@ -8,7 +8,7 @@ import { AllowedRequestMethod, IBwcxApiRequestAdaptorArgs, AbstractResponseParse
 import { configure as configureUrlcat } from 'urlcat-fork';
 import { DemoGetReqDTO, DemoGetRespDTO } from '../modules/demo/demo.dto';
 import { ItemReqDTO, ItemResDTO } from '../modules/items/item.dto';
-import { LoginReqDTO, LoginResDTO } from '../modules/login/login.dto';
+import { LoginReqDTO, LoginResDTO, SessionResDTO } from '../modules/login/login.dto';
 
 const urlcat = configureUrlcat({ arrayFormat: 'repeat' });
 
@@ -66,6 +66,17 @@ export class ApiClient<T = undefined> {
    */
   public async logout(req?: null, opts?: T): Promise<LoginResDTO> {
     return this._r(this._rArgs.d(req, opts)).then((resp) => this._rp.pat(LoginResDTO, resp));
+  }
+
+  /**
+   * 获取用户会话信息
+   *
+   * @param {null} req The request data (compatible with ReqDTO).
+   * @param {T} opts Extra request options.
+   * @returns {SessionResDTO} The response data (RespDTO).
+   */
+  public async getSession(req?: null, opts?: T): Promise<SessionResDTO> {
+    return this._r(this._rArgs.e(req, opts)).then((resp) => this._rp.pat(SessionResDTO, resp));
   }
 
   private _rArgs = {
@@ -145,6 +156,24 @@ export class ApiClient<T = undefined> {
           path: '/api/logout',
           req: null as null,
           resp: LoginResDTO,
+        },
+      };
+    },
+    e: (req: null, opts?: any) => {
+      return {
+        method: 'GET' as AllowedRequestMethod,
+        url: this._uf('/api/getSession', {
+          param: {},
+          query: {},
+        }),
+        data: {},
+        extraOpts: opts,
+        metadata: {
+          name: 'getSession',
+          method: 'GET',
+          path: '/api/getSession',
+          req: null as null,
+          resp: SessionResDTO,
         },
       };
     },
