@@ -9,8 +9,10 @@ import { DemoDetailRPO } from '../modules/demo/demo.rpo';
 
 export const clientRoutesMap = new Map<string, { path: string; routeProps: Newable | undefined; renderMethod: RenderMethodKind | undefined }>([
   ['About', { path: '/about', routeProps: undefined, renderMethod: undefined }],
+  ['CartContainer', { path: '/cart', routeProps: undefined, renderMethod: RenderMethodKind.SSR }],
   ['DemoDetail', { path: '/demo/detail/:id', routeProps: DemoDetailRPO, renderMethod: RenderMethodKind.SSR }],
   ['HomeView', { path: '/', routeProps: undefined, renderMethod: RenderMethodKind.SSR }],
   ['LoginView', { path: '/login', routeProps: undefined, renderMethod: undefined }],
+  ['ProfileView', { path: '/profile', routeProps: undefined, renderMethod: RenderMethodKind.SSR }],
 ]);
 export { DemoDetailRPO } from '../modules/demo/demo.rpo';

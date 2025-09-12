@@ -15,43 +15,6 @@ import * as CryptoJS from 'crypto-js';
 import fs from 'fs';
 import path from 'path';
 import HttpException from '@server/exceptions/http.exception';
-import multer from 'multer';
-
-// 配置multer存储
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(process.cwd(), 'public/avatar');
-    // 确保目录存在
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    // 生成唯一文件名：时间戳 + 随机数 + 原始扩展名
-    const ext = path.extname(file.originalname);
-    const filename = `avatar_${Date.now()}_${Math.random().toString(36).substr(2, 9)}${ext}`;
-    cb(null, filename);
-  },
-});
-
-// 文件过滤器，只允许图片文件
-const fileFilter = (req: any, file: any, cb: any) => {
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
-  } else {
-    cb(new Error('只允许上传图片文件'), false);
-  }
-};
-
-// 创建multer实例
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB限制
-  },
-});
 
 @ApiController()
 @UseMiddlewares(LoginMiddleware)
@@ -97,6 +60,7 @@ export default class LoginController {
       return {
         rows: [{ username: user.username, password: '' }], // 不返回密码
         message: '登录成功',
+        success: true,
       };
     } catch (error) {
       console.error('登录过程中发生错误:', error);
@@ -160,6 +124,7 @@ export default class LoginController {
       this.ctx.session.userId = newUser.userId;
 
       return {
+        success: true,
         message: '注册成功',
         user: {
           userId: newUser.userId,
@@ -182,6 +147,7 @@ export default class LoginController {
   public async logout() {
     this.ctx.session.user = null;
     return {
+      success: true,
       rows: [],
       message: 'Logout successful',
     };
@@ -192,11 +158,43 @@ export default class LoginController {
   @Contract(null, SessionResDTO)
   public getSession() {
     if (this.ctx.session.user) {
-      return {
-        data: this.ctx.session.user,
-      };
+      // 从用户存储中获取完整的用户信息，包括头像
+      const userStorePath = path.join(__dirname, '../../store/user.store.json');
+      let userData;
+
+      try {
+        userData = JSON.parse(fs.readFileSync(userStorePath, 'utf8'));
+      } catch (error) {
+        console.error('读取用户数据失败:', error);
+        return {
+          success: false,
+          message: '获取用户信息失败',
+          data: null,
+        };
+      }
+
+      const user = userData.users.find((u: any) => u.username === this.ctx.session.user.username);
+
+      if (user) {
+        return {
+          success: true,
+          data: {
+            userId: user.userId,
+            username: user.username,
+            avatar: user.avatar || null, // 如果没有头像就返回 null
+          },
+        };
+      } else {
+        return {
+          success: false,
+          message: '用户不存在',
+          data: null,
+        };
+      }
     } else {
       return {
+        success: false,
+        message: '未登录',
         data: null,
       };
     }
@@ -223,75 +221,18 @@ export default class LoginController {
         const contentType = this.ctx.request.headers['content-type'] || '';
         console.log('Content-Type:', contentType);
 
-        // 处理直接二进制文件上传 (Content-Type: image/*)
+        // 只支持直接二进制文件上传 (Content-Type: image/*)
         if (contentType.startsWith('image/')) {
           console.log('检测到直接二进制图片上传');
           this.handleBinaryUpload(contentType, resolve, reject);
           return;
         }
 
-        // 处理multipart/form-data格式上传
-        console.log('使用multer处理multipart/form-data上传');
+        // 不支持的上传格式
+        console.log('不支持的上传格式，只支持直接二进制图片上传');
+        this.ctx.status = 400;
+        reject(new HttpException(400));
 
-        // 使用multer处理文件上传
-        upload.single('avatar')(this.ctx.req as any, this.ctx.res as any, async (err: any) => {
-          try {
-            if (err) {
-              console.error('Multer文件上传错误:', err);
-              console.error('错误类型:', err.code);
-              console.error('错误消息:', err.message);
-              this.ctx.status = 400;
-              reject(new HttpException(400));
-              return;
-            }
-
-            console.log('Multer处理完成，检查文件');
-
-            // 检查是否有文件上传
-            const file = (this.ctx.req as any).file;
-            console.log('上传的文件信息:', file);
-
-            if (!file) {
-              console.log('没有找到上传的文件，返回400错误');
-              console.log('请求体信息:', this.ctx.request.body);
-              console.log('请求头信息:', this.ctx.request.headers);
-              this.ctx.status = 400;
-              reject(new HttpException(400));
-              return;
-            }
-
-            console.log('文件上传成功:', file.filename);
-            const avatarPath = `/avatar/${file.filename}`;
-
-            // 更新用户头像信息到数据库
-            const userStorePath = path.join(__dirname, '../../store/user.store.json');
-            const userData = JSON.parse(fs.readFileSync(userStorePath, 'utf8'));
-
-            const user = userData.users.find((u: any) => u.username === this.ctx.session.user.username);
-            if (user) {
-              // 删除旧头像文件（如果不是默认头像）
-              if (user.avatar && user.avatar !== '/avatar/default.png') {
-                const oldAvatarPath = path.join(process.cwd(), 'public', user.avatar);
-                if (fs.existsSync(oldAvatarPath)) {
-                  fs.unlinkSync(oldAvatarPath);
-                }
-              }
-
-              // 更新头像路径
-              user.avatar = avatarPath;
-              fs.writeFileSync(userStorePath, JSON.stringify(userData, null, 2));
-            }
-
-            resolve({
-              message: '头像上传成功',
-              avatar: avatarPath,
-            });
-          } catch (error) {
-            console.error('处理上传文件时发生错误:', error);
-            this.ctx.status = 500;
-            reject(new HttpException(500));
-          }
-        });
       } catch (error) {
         console.error('上传头像过程中发生错误:', error);
         this.ctx.status = 500;
@@ -366,6 +307,7 @@ export default class LoginController {
         await this.updateUserAvatar(avatarPath);
 
         resolve({
+          success: true,
           message: '头像上传成功',
           avatar: avatarPath
         });

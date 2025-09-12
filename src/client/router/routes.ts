@@ -18,6 +18,16 @@ const clientRoutes = parseRoutes([
     otherOptions: undefined,
   },
   {
+    name: 'CartContainer',
+    path: '/cart',
+    fullPath: '/cart',
+    component: () => import(/* webpackChunkName: "CartContainer" */ '../modules/cart/cart.view.vue'),
+    routeProps: undefined,
+    priority: undefined,
+    renderMethod: RenderMethodKind.SSR,
+    otherOptions: undefined,
+  },
+  {
     name: 'DemoDetail',
     path: '/demo/detail/:id',
     fullPath: '/demo/detail/:id',
@@ -45,6 +55,16 @@ const clientRoutes = parseRoutes([
     routeProps: undefined,
     priority: undefined,
     renderMethod: undefined,
+    otherOptions: undefined,
+  },
+  {
+    name: 'ProfileView',
+    path: '/profile',
+    fullPath: '/profile',
+    component: () => import(/* webpackChunkName: "ProfileView" */ '../modules/profile/profile.view.vue'),
+    routeProps: undefined,
+    priority: undefined,
+    renderMethod: RenderMethodKind.SSR,
     otherOptions: undefined,
   },
 ]);

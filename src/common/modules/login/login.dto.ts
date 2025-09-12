@@ -42,6 +42,7 @@ export class RegisterReqDTO {
 }
 
 export class RegisterResDTO {
+  success?: boolean;
   message?: string;
   user?: {
     userId: string;
@@ -50,17 +51,24 @@ export class RegisterResDTO {
 }
 
 export class LoginResDTO {
+  success?: boolean;
   @Type(() => LoginDTO)
   rows: LoginDTO[];
   message?: string;
 }
 
 export class SessionResDTO {
+  success?: boolean;
   message?: string;
-  data: Object | null;
+  data: {
+    userId: string;
+    username: string;
+    avatar: string | null;
+  } | null;
 }
 
 export class UploadResDTO {
+  success?: boolean;
   message?: string;
   avatar?: string;
 }

@@ -7,7 +7,10 @@ import Cart from '@client/components/cart.vue';
 import { AsyncDataOptions } from '@client/typings';
 import { ItemDTO, ItemResDTO } from '@common/modules/items/item.dto';
 import { Prop } from 'vue-property-decorator';
-import CartContainer from '@client/components/cart-container.vue';
+import { CartDTO } from '@common/modules/cart/cart.dto';
+import { ApiClient } from '@common/api/api-client';
+import { reactive } from 'vue';
+import { ElNotification } from 'element-plus';
 
 @View('/')
 @Options({
@@ -15,19 +18,22 @@ import CartContainer from '@client/components/cart-container.vue';
     MyFooter,
     MyItem,
     Cart,
-    CartContainer,
   },
+  inject: ['apiClient'],
 })
 @RenderMethod(RenderMethodKind.SSR)
 export default class HomeView extends Vue {
+  declare apiClient: ApiClient;
   @Prop({
     type: Object,
     required: true,
   })
   homeState!: ItemResDTO;
-  selectCount: number = 0;
-  selectItems: Array<ItemDTO> = [];
-  showCart: boolean = false;
+
+  cartState = reactive({
+    count: 0,
+    items: [] as CartDTO[],
+  });
 
   get totalCount() {
     return this.homeState.count;
@@ -37,50 +43,53 @@ export default class HomeView extends Vue {
     return this.homeState.rows;
   }
 
-  handleAddToCart(data: { quantity: number; items: Array<ItemDTO> }) {
-    // 将商品数量添加到购物车总数
-    this.selectCount += data.quantity;
-
-    // 将商品信息添加到购物车列表
-    this.selectItems.push(...data.items);
-
-    console.log(`Added ${data.quantity} items to cart. Total count:`, this.selectCount);
-    console.log('Current cart items:', this.selectItems);
+  get selectCount() {
+    return this.cartState.count;
   }
 
-  handleShowCart() {
-    this.showCart = true;
+  get selectItems() {
+    return this.cartState.items;
   }
-
-  handleCloseCart() {
-    this.showCart = false;
-  }
-
-  handleRemoveItem(index: number) {
-    if (index >= 0 && index < this.selectItems.length) {
-      // 从购物车中移除商品
-      this.selectItems.splice(index, 1);
-      // 更新商品数量
-      this.selectCount = this.selectItems.length;
-      console.log(`Removed item at index ${index}. Total count:`, this.selectCount);
-      console.log('Current cart items:', this.selectItems);
-    } else {
-      console.warn(`Invalid index ${index} for removing item.`);
+  async mounted() {
+    try {
+      const cartItems = await this.apiClient.getCart();
+      this.cartState.count = cartItems.count;
+      this.cartState.items = cartItems.rows;
+    } catch (error) {
+      console.error('Failed to load initial cart state:', error);
     }
   }
 
-  async mounted() {
-    console.log('HomeView mounted', this.totalCount);
-    console.log('HomeView mounted', this.itemsList);
+  async handleAddToCart(payload: { quantity: number; items: ItemDTO[] }) {
+    try {
+      const requestData = {
+        items: payload.items,
+      };
+      const res = await this.apiClient.addToCart(requestData);
+      this.cartState.items = res.cart.rows;
+      this.cartState.count = res.cart.count;
+      ElNotification.success({
+        title: 'Added to Cart',
+        message: `Successfully added ${payload.quantity} items to your cart.`,
+        duration: 1000,
+      });
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      ElNotification.error({
+        title: 'Error',
+        message: 'Failed to add items to cart. Please try again.',
+        duration: 1000,
+      });
+    }
   }
 
   async asyncData({ apiClient }: AsyncDataOptions) {
-    const res = await apiClient.getAllItems({
+    const items = await apiClient.getAllItems({
       _t: true,
     });
-    console.log('Fetched items:', res);
+
     return {
-      homeState: res,
+      homeState: items,
     };
   }
 }
@@ -88,10 +97,7 @@ export default class HomeView extends Vue {
 
 <template>
   <div class="home-view">
-    <cart :item-count="this.selectCount" @click="handleShowCart" />
-    <transition name="slide-fade">
-      <cart-container :visible="showCart" :items="selectItems" @remove-item="handleRemoveItem" @close-cart="handleCloseCart" />
-    </transition>
+    <cart :item-count="selectCount" />
     <div class="items-container">
       <my-item
         v-for="item in itemsList"
@@ -133,6 +139,7 @@ export default class HomeView extends Vue {
   align-items: center;
   position: relative;
   gap: 20px;
+  transition: transform 0.5s ease, opacity 0.5s ease;
 
   & .items-container {
     display: flex;

@@ -18,18 +18,18 @@ export default class Cart extends Vue {
     type: Number,
     default: 0,
   })
-  itemCount!: number;
+  itemCount: number = 0;
 }
 </script>
 
 <template>
-  <div class="cart">
+  <router-link to="/cart" class="cart">
     <client-only>
       <el-badge :value="itemCount" class="item">
         <el-icon><ShoppingTrolley style="width: 36px; height: 36px" /></el-icon>
       </el-badge>
     </client-only>
-  </div>
+  </router-link>
 </template>
 
 <style scoped lang="less">

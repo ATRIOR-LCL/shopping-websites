@@ -1,4 +1,7 @@
 import { ItemDTO } from '../items/item.dto';
+import { IsNumber } from 'class-validator';
+import { FromBody } from 'bwcx-common';
+
 
 export class CartDTO extends ItemDTO {
   constructor() {
@@ -8,7 +11,7 @@ export class CartDTO extends ItemDTO {
 }
 
 export class GetCartReqDTO {
-  username: string;
+  // username 从服务端 session 获取，不需要客户端传递
 }
 
 export class GetCartResDTO {
@@ -17,27 +20,39 @@ export class GetCartResDTO {
 }
 
 export class AddToCartReqDTO {
-  username: string;
-  item: ItemDTO;
+  @FromBody()
+  items: ItemDTO[];
 }
 
 export class AddToCartResDTO {
-  data: string;
+  message: string;
+  cart: {
+    count: number;
+    rows: CartDTO[];
+  };
 }
 
 export class ClearCartReqDTO {
-  username: string;
 }
 
 export class ClearCartResDTO {
-  data: string;
+  message: string;
+  cart: {
+    count: number;
+    rows: CartDTO[];
+  };
 }
 
 export class DeleteItemReqDTO {
-  username: string;
-  itemId: number;
+  @IsNumber()
+  @FromBody()
+  itemIndex: number;
 }
 
 export class DeleteItemResDTO {
-  data: string;
+  message: string;
+  cart: {
+    count: number;
+    rows: CartDTO[];
+  };
 }
