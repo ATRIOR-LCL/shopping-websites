@@ -119,11 +119,11 @@ export default class LoginView extends Vue {
         <el-form-item label="Password" prop="password">
           <el-input type="password" autocomplete="off" v-model="state.password" />
         </el-form-item>
-        <el-form-item v-if="!state.isLoginPage" label="Confirm Password" prop="confirmPassword">
+        <el-form-item v-if="!state.isLoginPage" label="Confirm" prop="confirmPassword">
           <el-input type="password" autocomplete="off" v-model="state.confirmPassword" />
         </el-form-item>
         <el-form-item>
-          <el-button @click="handleLogin" v-if="state.isLoginPage"> Submit </el-button>
+          <el-button @click="handleLogin" type="primary" v-if="state.isLoginPage"> Submit </el-button>
           <el-button @click="handleRegister" v-else> Register </el-button>
           <el-button @click="handleReset">Reset</el-button>
           <el-button link type="text" @click="this.state.isLoginPage = !this.state.isLoginPage">

@@ -3,7 +3,7 @@ import { Vue, Options } from 'vue-class-component';
 import { View } from 'bwcx-client-vue3';
 import { RenderMethod, RenderMethodKind } from 'bwcx-client-vue3';
 import MyFooter from '@client/components/my-footer.vue';
-import { ElIcon, ElMessage } from 'element-plus';
+import { ElIcon, ElMessage, ElCard, ElButton } from 'element-plus';
 import { Upload } from '@element-plus/icons-vue';
 import { ApiClientType } from '@client/api';
 import { ClientOnly } from 'vite-ssr';
@@ -15,6 +15,8 @@ import { ClientOnly } from 'vite-ssr';
     ElIcon,
     Upload,
     ClientOnly,
+    ElCard,
+    ElButton,
   },
   inject: ['apiClient'],
 })
@@ -109,7 +111,6 @@ export default class ProfileView extends Vue {
       ElMessage.error('上传失败，请重试');
     } finally {
       this.uploading = false;
-      // 清空文件选择
       this.$refs.fileInput.value = '';
     }
   }
@@ -118,9 +119,11 @@ export default class ProfileView extends Vue {
 
 <template>
   <div class="container">
-    <div class="profile-bg">
-      <img src="../../../../public/profile_bg/gbc.png" alt="" />
-    </div>
+    <client-only>
+      <div class="profile-bg">
+        <img src="../../../../public/profile_bg/gbc.png" alt="" />
+      </div>
+    </client-only>
     <div class="profile-info">
       <div class="profile-details">
         <div class="profile-name">
@@ -128,19 +131,37 @@ export default class ProfileView extends Vue {
           <input ref="fileInput" type="file" accept="image/*" @change="handleFileChange" style="display: none" />
 
           <!-- 头像显示和上传区域 -->
-          <div class="profile-avatar" @click="triggerFileSelect" :class="{ uploading: uploading }">
-            <img :src="userAvatar" alt="用户头像" />
-            <div class="profile-avatar-upload">
-              <client-only>
+          <client-only>
+            <div class="profile-avatar" @click="triggerFileSelect" :class="{ uploading: uploading }">
+              <img :src="userAvatar" alt="用户头像" />
+              <div class="profile-avatar-upload">
                 <el-icon v-if="!uploading" size="50" color="#fff"><Upload /></el-icon>
                 <div v-else class="loading-spinner">上传中...</div>
-              </client-only>
+              </div>
             </div>
-          </div>
+          </client-only>
 
-          <h1>{{ username || 'atrior' }}</h1>
+          <h1>Hello, {{ username || 'atrior' }} !</h1>
         </div>
-        <div class="profile-items"></div>
+        <div class="profile-items">
+          <el-card class="profile-options">
+            <template #header>
+              <h1 style="font-size: var(--font-medium-size); text-align: center">Personal Information</h1>
+            </template>
+          </el-card>
+          <el-card class="profile-orders">
+            <template #header>
+              <h1 style="font-size: var(--font-medium-size); text-align: center">Shopping Tools</h1>
+            </template>
+            <!-- <div class="profile-orders-buttons">
+              <client-only>
+                <el-button round class="pro-btn">Cart</el-button>
+                <el-button round class="pro-btn">Orders</el-button>
+                <el-button round class="pro-btn">Edit Profile</el-button>
+              </client-only>
+            </div> -->
+          </el-card>
+        </div>
       </div>
     </div>
     <my-footer />
@@ -150,14 +171,15 @@ export default class ProfileView extends Vue {
 <style scoped lang="less">
 .container {
   width: 100%;
-  height: 100vh;
+  height: auto;
+  min-height: 100vh;
   position: relative;
   display: flex;
   flex-direction: column;
 
   & .profile-bg {
     width: 100%;
-    height: 500px;
+    height: 400px;
     position: relative;
     top: 0;
     overflow: hidden;
@@ -180,28 +202,28 @@ export default class ProfileView extends Vue {
     justify-content: center;
     align-items: center;
     & .profile-details {
-      width: 850px;
+      width: 50%;
       height: 100%;
       // background-color: red;
       position: relative;
 
       & .profile-name {
         width: 100%;
-        height: 150px;
+        height: 90px;
         // background-color: green;
         position: relative;
         display: flex;
         align-items: start;
 
         & h1 {
-          font-size: 45px;
-          font-weight: 400;
+          font-size: 35px;
+          font-weight: 100;
           margin-top: 10px;
           margin-left: 50px;
         }
 
         & .profile-avatar {
-          height: 95%;
+          height: 100px;
           aspect-ratio: 1;
           border: 5px solid #fff;
           border-radius: 50%;
@@ -259,7 +281,54 @@ export default class ProfileView extends Vue {
           }
         }
       }
+
+      & .profile-items {
+        width: 100%;
+        height: 500px;
+        // background-color: green;
+        margin-bottom: 100px;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        align-items: start;
+        & .profile-card {
+          background-color: #fff;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        & .profile-options {
+          width: 60%;
+          height: 90%;
+        }
+
+        & .profile-orders {
+          width: 30%;
+          height: 50%;
+          display: flex;
+          flex-direction: column;
+          // justify-content: space-around;
+          align-items: center;
+        }
+      }
     }
   }
+}
+
+.profile-orders-buttons {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.pro-btn {
+  width: 80%;
+  height: 30px;
+  display: flex;
 }
 </style>

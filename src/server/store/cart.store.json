@@ -3,44 +3,20 @@
     "owner": "atrior",
     "rows": [
       {
-        "itemId": 1,
-        "itemEmoji": "🍞",
-        "itemName": "小面包",
-        "description": "吃点面包吗",
-        "price": 10.99,
-        "itemIndex": 1757688420411
+        "itemId": 2,
+        "itemEmoji": "🧀",
+        "itemName": "小奶酪",
+        "description": "来点奶酪",
+        "price": 12.99,
+        "itemIndex": 1757694456488
       },
       {
-        "itemId": 1,
-        "itemEmoji": "🍞",
-        "itemName": "小面包",
-        "description": "吃点面包吗",
-        "price": 10.99,
-        "itemIndex": 1757688420389
-      },
-      {
-        "itemId": 3,
-        "itemEmoji": "🥩",
-        "itemName": "大牛排",
-        "description": "量大管饱",
-        "price": 8.99,
-        "itemIndex": 1757688435226
-      },
-      {
-        "itemId": 3,
-        "itemEmoji": "🥩",
-        "itemName": "大牛排",
-        "description": "量大管饱",
-        "price": 8.99,
-        "itemIndex": 1757688435485
-      },
-      {
-        "itemId": 12,
-        "itemEmoji": "🍫",
-        "itemName": "巧克力",
-        "description": "纵享丝滑",
-        "price": 14.99,
-        "itemIndex": 1757688437457
+        "itemId": 2,
+        "itemEmoji": "🧀",
+        "itemName": "小奶酪",
+        "description": "来点奶酪",
+        "price": 12.99,
+        "itemIndex": 1757694456153
       }
     ]
   }

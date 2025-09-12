@@ -1,11 +1,11 @@
 <script lang="ts">
 import { Vue, Options } from 'vue-class-component';
-import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElIcon, ElAvatar } from 'element-plus';
+import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElIcon, ElAvatar, ElButton } from 'element-plus';
 import { ArrowDown } from '@element-plus/icons-vue';
 import { ClientOnly } from 'vite-ssr';
 import { Prop } from 'vue-property-decorator';
 import { ApiClient } from '@common/api/api-client';
-import { ShoppingTrolley, SwitchButton, UserFilled } from '@element-plus/icons-vue';
+import { ShoppingTrolley, SwitchButton, UserFilled, Goods } from '@element-plus/icons-vue';
 @Options({
   components: {
     ElDropdown,
@@ -18,13 +18,16 @@ import { ShoppingTrolley, SwitchButton, UserFilled } from '@element-plus/icons-v
     ShoppingTrolley,
     SwitchButton,
     UserFilled,
+    Goods,
+    ElButton,
   },
   inject: ['apiClient'],
 })
 export default class Head extends Vue {
   declare apiClient: ApiClient;
   @Prop({ type: String, default: 'Guest' }) username: string;
-  @Prop({ type: String, default: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png' }) avatarURL: string;
+  @Prop({ type: String, default: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png' })
+  avatarURL: string;
 
   get avatarUrl() {
     return this.avatarURL || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';
@@ -54,28 +57,44 @@ export default class Head extends Vue {
 
 <template>
   <header class="app-header">
-    <router-link to="/" style="font-size: var(--font-large-size); font-weight: 700; text-decoration: none; color: #000;">Hello Shopping 😎</router-link>
+    <router-link to="/" style="font-size: var(--font-large-size); font-weight: 700; text-decoration: none; color: #000"
+      >Hello Shopping 😎</router-link
+    >
     <client-only>
-      <el-dropdown class="my-dropdown">
-        <el-avatar :src="avatarUrl" :size="35" />
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item text @click="this.$router.push('/profile')">
-              <el-icon><UserFilled /></el-icon>
-              <p>Profile</p>
-            </el-dropdown-item>
-            <!-- <el-dropdown-item divided disabled></el-dropdown-item> -->
-            <el-dropdown-item @click="this.$emit('cart-clicked')">
-              <el-icon><ShoppingTrolley /></el-icon>
-              <p>Cart</p>
-            </el-dropdown-item>
-            <el-dropdown-item divided @click="handleLogout">
-              <el-icon><SwitchButton /></el-icon>
-              <p>Log Out</p>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: fit-content;
+          height: fit-content;
+          gap: 20px;
+        "
+      >
+      <el-button link  style="width: fit-content; height: fit-content; padding: 0; margin: 0;"><el-icon size="24"><ShoppingTrolley /></el-icon></el-button>
+      <el-button link  style="width: fit-content; height: fit-content; padding: 0; margin: 0;"><el-icon size="24"><Goods /></el-icon></el-button>
+        <el-dropdown class="my-dropdown">
+          
+          <el-avatar :src="avatarUrl" :size="35" />
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item text @click="this.$router.push('/profile')">
+                <el-icon><UserFilled /></el-icon>
+                <p>Profile</p>
+              </el-dropdown-item>
+              <!-- <el-dropdown-item divided disabled></el-dropdown-item> -->
+              <el-dropdown-item @click="this.$emit('cart-clicked')">
+                <el-icon><ShoppingTrolley /></el-icon>
+                <p>Cart</p>
+              </el-dropdown-item>
+              <el-dropdown-item divided @click="handleLogout">
+                <el-icon><SwitchButton /></el-icon>
+                <p>Log Out</p>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
     </client-only>
   </header>
 </template>
