@@ -6,9 +6,10 @@
 
 import { AllowedRequestMethod, IBwcxApiRequestAdaptorArgs, AbstractResponseParser } from 'bwcx-api-client';
 import { configure as configureUrlcat } from 'urlcat-fork';
+import { GetCartReqDTO, GetCartResDTO, AddToCartReqDTO, AddToCartResDTO, ClearCartReqDTO, ClearCartResDTO, DeleteItemReqDTO, DeleteItemResDTO } from '../modules/cart/cart.dto';
 import { DemoGetReqDTO, DemoGetRespDTO } from '../modules/demo/demo.dto';
 import { ItemReqDTO, ItemResDTO } from '../modules/items/item.dto';
-import { LoginReqDTO, LoginResDTO, SessionResDTO } from '../modules/login/login.dto';
+import { LoginReqDTO, LoginResDTO, RegisterReqDTO, RegisterResDTO, SessionResDTO, UploadResDTO } from '../modules/login/login.dto';
 
 const urlcat = configureUrlcat({ arrayFormat: 'repeat' });
 
@@ -25,6 +26,50 @@ export class ApiClient<T = undefined> {
   }
 
   /**
+   * Get cart items
+   *
+   * @param {GetCartReqDTO} req The request data (compatible with ReqDTO).
+   * @param {T} opts Extra request options.
+   * @returns {GetCartResDTO} The response data (RespDTO).
+   */
+  public async getCart(req: GetCartReqDTO, opts?: T): Promise<GetCartResDTO> {
+    return this._r(this._rArgs.a(req, opts)).then((resp) => this._rp.pat(GetCartResDTO, resp));
+  }
+
+  /**
+   * Add item to cart
+   *
+   * @param {AddToCartReqDTO} req The request data (compatible with ReqDTO).
+   * @param {T} opts Extra request options.
+   * @returns {AddToCartResDTO} The response data (RespDTO).
+   */
+  public async addToCart(req: AddToCartReqDTO, opts?: T): Promise<AddToCartResDTO> {
+    return this._r(this._rArgs.b(req, opts)).then((resp) => this._rp.pat(AddToCartResDTO, resp));
+  }
+
+  /**
+   * Clear cart
+   *
+   * @param {ClearCartReqDTO} req The request data (compatible with ReqDTO).
+   * @param {T} opts Extra request options.
+   * @returns {ClearCartResDTO} The response data (RespDTO).
+   */
+  public async clearCart(req: ClearCartReqDTO, opts?: T): Promise<ClearCartResDTO> {
+    return this._r(this._rArgs.c(req, opts)).then((resp) => this._rp.pat(ClearCartResDTO, resp));
+  }
+
+  /**
+   * Delete Single Item from cart
+   *
+   * @param {DeleteItemReqDTO} req The request data (compatible with ReqDTO).
+   * @param {T} opts Extra request options.
+   * @returns {DeleteItemResDTO} The response data (RespDTO).
+   */
+  public async deleteItem(req: DeleteItemReqDTO, opts?: T): Promise<DeleteItemResDTO> {
+    return this._r(this._rArgs.d(req, opts)).then((resp) => this._rp.pat(DeleteItemResDTO, resp));
+  }
+
+  /**
    * 一个示例接口
    *
    * @param {DemoGetReqDTO} req The request data (compatible with ReqDTO).
@@ -32,7 +77,7 @@ export class ApiClient<T = undefined> {
    * @returns {DemoGetRespDTO} The response data (RespDTO).
    */
   public async demoGet(req: DemoGetReqDTO, opts?: T): Promise<DemoGetRespDTO> {
-    return this._r(this._rArgs.a(req, opts)).then((resp) => this._rp.pat(DemoGetRespDTO, resp));
+    return this._r(this._rArgs.e(req, opts)).then((resp) => this._rp.pat(DemoGetRespDTO, resp));
   }
 
   /**
@@ -43,7 +88,7 @@ export class ApiClient<T = undefined> {
    * @returns {ItemResDTO} The response data (RespDTO).
    */
   public async getAllItems(req: ItemReqDTO, opts?: T): Promise<ItemResDTO> {
-    return this._r(this._rArgs.b(req, opts)).then((resp) => this._rp.pat(ItemResDTO, resp));
+    return this._r(this._rArgs.f(req, opts)).then((resp) => this._rp.pat(ItemResDTO, resp));
   }
 
   /**
@@ -54,7 +99,18 @@ export class ApiClient<T = undefined> {
    * @returns {LoginResDTO} The response data (RespDTO).
    */
   public async login(req: LoginReqDTO, opts?: T): Promise<LoginResDTO> {
-    return this._r(this._rArgs.c(req, opts)).then((resp) => this._rp.pat(LoginResDTO, resp));
+    return this._r(this._rArgs.g(req, opts)).then((resp) => this._rp.pat(LoginResDTO, resp));
+  }
+
+  /**
+   * User register
+   *
+   * @param {RegisterReqDTO} req The request data (compatible with ReqDTO).
+   * @param {T} opts Extra request options.
+   * @returns {RegisterResDTO} The response data (RespDTO).
+   */
+  public async register(req: RegisterReqDTO, opts?: T): Promise<RegisterResDTO> {
+    return this._r(this._rArgs.h(req, opts)).then((resp) => this._rp.pat(RegisterResDTO, resp));
   }
 
   /**
@@ -65,7 +121,7 @@ export class ApiClient<T = undefined> {
    * @returns {LoginResDTO} The response data (RespDTO).
    */
   public async logout(req?: null, opts?: T): Promise<LoginResDTO> {
-    return this._r(this._rArgs.d(req, opts)).then((resp) => this._rp.pat(LoginResDTO, resp));
+    return this._r(this._rArgs.i(req, opts)).then((resp) => this._rp.pat(LoginResDTO, resp));
   }
 
   /**
@@ -76,11 +132,94 @@ export class ApiClient<T = undefined> {
    * @returns {SessionResDTO} The response data (RespDTO).
    */
   public async getSession(req?: null, opts?: T): Promise<SessionResDTO> {
-    return this._r(this._rArgs.e(req, opts)).then((resp) => this._rp.pat(SessionResDTO, resp));
+    return this._r(this._rArgs.j(req, opts)).then((resp) => this._rp.pat(SessionResDTO, resp));
+  }
+
+  /**
+   * 上传用户头像
+   *
+   * @param {null} req The request data (compatible with ReqDTO).
+   * @param {T} opts Extra request options.
+   * @returns {UploadResDTO} The response data (RespDTO).
+   */
+  public async uploadAvatar(req?: null, opts?: T): Promise<UploadResDTO> {
+    return this._r(this._rArgs.k(req, opts)).then((resp) => this._rp.pat(UploadResDTO, resp));
   }
 
   private _rArgs = {
-    a: (req: DemoGetReqDTO, opts?: any) => {
+    a: (req: GetCartReqDTO, opts?: any) => {
+      return {
+        method: 'POST' as AllowedRequestMethod,
+        url: this._uf('/api/cart', {
+          param: {},
+          query: {},
+        }),
+        data: {},
+        extraOpts: opts,
+        metadata: {
+          name: 'getCart',
+          method: 'POST',
+          path: '/api/cart',
+          req: GetCartReqDTO,
+          resp: GetCartResDTO,
+        },
+      };
+    },
+    b: (req: AddToCartReqDTO, opts?: any) => {
+      return {
+        method: 'POST' as AllowedRequestMethod,
+        url: this._uf('/api/cart/add', {
+          param: {},
+          query: {},
+        }),
+        data: {},
+        extraOpts: opts,
+        metadata: {
+          name: 'addToCart',
+          method: 'POST',
+          path: '/api/cart/add',
+          req: AddToCartReqDTO,
+          resp: AddToCartResDTO,
+        },
+      };
+    },
+    c: (req: ClearCartReqDTO, opts?: any) => {
+      return {
+        method: 'POST' as AllowedRequestMethod,
+        url: this._uf('/api/cart/clear', {
+          param: {},
+          query: {},
+        }),
+        data: {},
+        extraOpts: opts,
+        metadata: {
+          name: 'clearCart',
+          method: 'POST',
+          path: '/api/cart/clear',
+          req: ClearCartReqDTO,
+          resp: ClearCartResDTO,
+        },
+      };
+    },
+    d: (req: DeleteItemReqDTO, opts?: any) => {
+      return {
+        method: 'POST' as AllowedRequestMethod,
+        url: this._uf('/api/cart/deleteItem', {
+          param: {},
+          query: {},
+        }),
+        data: {},
+        extraOpts: opts,
+        metadata: {
+          name: 'deleteItem',
+          method: 'POST',
+          path: '/api/cart/deleteItem',
+          req: DeleteItemReqDTO,
+          resp: DeleteItemResDTO,
+        },
+      };
+    },
+    e: (req: DemoGetReqDTO, opts?: any) => {
       return {
         method: 'GET' as AllowedRequestMethod,
         url: this._uf('/api/demoGet/:id', {
@@ -102,7 +241,7 @@ export class ApiClient<T = undefined> {
         },
       };
     },
-    b: (req: ItemReqDTO, opts?: any) => {
+    f: (req: ItemReqDTO, opts?: any) => {
       return {
         method: 'GET' as AllowedRequestMethod,
         url: this._uf('/api/items', {
@@ -120,7 +259,7 @@ export class ApiClient<T = undefined> {
         },
       };
     },
-    c: (req: LoginReqDTO, opts?: any) => {
+    g: (req: LoginReqDTO, opts?: any) => {
       return {
         method: 'POST' as AllowedRequestMethod,
         url: this._uf('/api/login', {
@@ -141,7 +280,29 @@ export class ApiClient<T = undefined> {
         },
       };
     },
-    d: (req: null, opts?: any) => {
+    h: (req: RegisterReqDTO, opts?: any) => {
+      return {
+        method: 'POST' as AllowedRequestMethod,
+        url: this._uf('/api/register', {
+          param: {},
+          query: {},
+        }),
+        data: {
+          username: req.username,
+          password: req.password,
+          confirmPassword: req.confirmPassword,
+        },
+        extraOpts: opts,
+        metadata: {
+          name: 'register',
+          method: 'POST',
+          path: '/api/register',
+          req: RegisterReqDTO,
+          resp: RegisterResDTO,
+        },
+      };
+    },
+    i: (req: null, opts?: any) => {
       return {
         method: 'POST' as AllowedRequestMethod,
         url: this._uf('/api/logout', {
@@ -159,7 +320,7 @@ export class ApiClient<T = undefined> {
         },
       };
     },
-    e: (req: null, opts?: any) => {
+    j: (req: null, opts?: any) => {
       return {
         method: 'GET' as AllowedRequestMethod,
         url: this._uf('/api/getSession', {
@@ -174,6 +335,24 @@ export class ApiClient<T = undefined> {
           path: '/api/getSession',
           req: null as null,
           resp: SessionResDTO,
+        },
+      };
+    },
+    k: (req: null, opts?: any) => {
+      return {
+        method: 'POST' as AllowedRequestMethod,
+        url: this._uf('/api/upload', {
+          param: {},
+          query: {},
+        }),
+        data: {},
+        extraOpts: opts,
+        metadata: {
+          name: 'uploadAvatar',
+          method: 'POST',
+          path: '/api/upload',
+          req: null as null,
+          resp: UploadResDTO,
         },
       };
     },

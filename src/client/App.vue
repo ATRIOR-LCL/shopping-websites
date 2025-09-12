@@ -19,7 +19,6 @@ export default class App23110501092 extends Vue {
 
   async checkSession() {
     const res = await this.apiClient.getSession();
-    console.log("res.success", res.success);
     console.log("res.data", res.data);
 
     if ( res.data) {

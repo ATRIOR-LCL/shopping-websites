@@ -1,0 +1,16 @@
+{
+  "users": [
+    {
+      "userId": "user_001",
+      "username": "atrior",
+      "password": "98b4dbbed385c3fbbf00d3a69c89d850",
+      "avatar": "/avatar/avatar_1757660761993_77evibxml.jpg"
+    },
+    {
+      "userId": "user_1757658940356",
+      "username": "user01",
+      "password": "c37c6474f327735b620b4d4a3f684560",
+      "avatar": "/avatar/default.png"
+    }
+  ]
+}
