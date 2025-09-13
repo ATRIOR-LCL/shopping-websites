@@ -14,5 +14,6 @@ export const clientRoutesMap = new Map<string, { path: string; routeProps: Newab
   ['HomeView', { path: '/', routeProps: undefined, renderMethod: RenderMethodKind.SSR }],
   ['LoginView', { path: '/login', routeProps: undefined, renderMethod: undefined }],
   ['ProfileView', { path: '/profile', routeProps: undefined, renderMethod: RenderMethodKind.SSR }],
+  ['OrdersView', { path: '/orders', routeProps: undefined, renderMethod: RenderMethodKind.SSR }],
 ]);
 export { DemoDetailRPO } from '../modules/demo/demo.rpo';

@@ -3,7 +3,8 @@
  * DO NOT MODIFY IT BY HAND.
  */
 
-import { parseRoutes, RenderMethodKind } from 'bwcx-client-vue3';
+import { RenderMethodKind } from 'bwcx-client-vue';
+import { parseRoutes } from 'bwcx-client-vue3';
 import { DemoDetailRPO } from '../../common/modules/demo/demo.rpo';
 
 const clientRoutes = parseRoutes([
@@ -62,6 +63,16 @@ const clientRoutes = parseRoutes([
     path: '/profile',
     fullPath: '/profile',
     component: () => import(/* webpackChunkName: "ProfileView" */ '../modules/profile/profile.view.vue'),
+    routeProps: undefined,
+    priority: undefined,
+    renderMethod: RenderMethodKind.SSR,
+    otherOptions: undefined,
+  },
+  {
+    name: 'OrdersView',
+    path: '/orders',
+    fullPath: '/orders',
+    component: () => import(/* webpackChunkName: "OrdersView" */ '../modules/orders/oders.view.vue'),
     routeProps: undefined,
     priority: undefined,
     renderMethod: RenderMethodKind.SSR,

@@ -5,7 +5,7 @@ import { ArrowDown } from '@element-plus/icons-vue';
 import { ClientOnly } from 'vite-ssr';
 import { Prop } from 'vue-property-decorator';
 import { ApiClient } from '@common/api/api-client';
-import { ShoppingTrolley, SwitchButton, UserFilled, Goods } from '@element-plus/icons-vue';
+import { ShoppingTrolley, SwitchButton, UserFilled, Goods, ArrowDownBold } from '@element-plus/icons-vue';
 @Options({
   components: {
     ElDropdown,
@@ -20,6 +20,7 @@ import { ShoppingTrolley, SwitchButton, UserFilled, Goods } from '@element-plus/
     UserFilled,
     Goods,
     ElButton,
+    ArrowDownBold,
   },
   inject: ['apiClient'],
 })
@@ -71,19 +72,18 @@ export default class Head extends Vue {
           gap: 20px;
         "
       >
-      <el-button link  style="width: fit-content; height: fit-content; padding: 0; margin: 0;"><el-icon size="24"><ShoppingTrolley /></el-icon></el-button>
-      <el-button link  style="width: fit-content; height: fit-content; padding: 0; margin: 0;"><el-icon size="24"><Goods /></el-icon></el-button>
+      <el-button link  style="width: fit-content; height: fit-content; padding: 0; margin: 0;"><el-icon size="24" @click="this.$router.push('/cart')"><ShoppingTrolley /></el-icon></el-button>
+      <el-button link  style="width: fit-content; height: fit-content; padding: 0; margin: 0;"><el-icon size="24" @click="this.$router.push('/orders')"><Goods /></el-icon></el-button>
         <el-dropdown class="my-dropdown">
-          
           <el-avatar :src="avatarUrl" :size="35" />
+          <el-icon><ArrowDownBold /></el-icon>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item text @click="this.$router.push('/profile')">
                 <el-icon><UserFilled /></el-icon>
                 <p>Profile</p>
               </el-dropdown-item>
-              <!-- <el-dropdown-item divided disabled></el-dropdown-item> -->
-              <el-dropdown-item @click="this.$emit('cart-clicked')">
+              <el-dropdown-item @click="this.$router.push('/cart')">
                 <el-icon><ShoppingTrolley /></el-icon>
                 <p>Cart</p>
               </el-dropdown-item>

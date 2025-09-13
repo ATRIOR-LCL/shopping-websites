@@ -10,6 +10,7 @@ import { GetCartResDTO, AddToCartReqDTO, AddToCartResDTO, ClearCartResDTO, Delet
 import { DemoGetReqDTO, DemoGetRespDTO } from '../modules/demo/demo.dto';
 import { ItemReqDTO, ItemResDTO } from '../modules/items/item.dto';
 import { LoginReqDTO, LoginResDTO, RegisterReqDTO, RegisterResDTO, SessionResDTO, UploadResDTO } from '../modules/login/login.dto';
+import { GetOrdersResDTO, AddOrderReqDTO, AddOrderResDTO, AddAllOrderReqDTO, AddAllOrderResDTO } from '../modules/orders/oders.dto';
 
 const urlcat = configureUrlcat({ arrayFormat: 'repeat' });
 
@@ -144,6 +145,39 @@ export class ApiClient<T = undefined> {
    */
   public async uploadAvatar(req?: null, opts?: T): Promise<UploadResDTO> {
     return this._r(this._rArgs.k(req, opts)).then((resp) => this._rp.pat(UploadResDTO, resp));
+  }
+
+  /**
+   * 获取当前用户的订单
+   *
+   * @param {null} req The request data (compatible with ReqDTO).
+   * @param {T} opts Extra request options.
+   * @returns {GetOrdersResDTO} The response data (RespDTO).
+   */
+  public async getOrders(req?: null, opts?: T): Promise<GetOrdersResDTO> {
+    return this._r(this._rArgs.l(req, opts)).then((resp) => this._rp.pat(GetOrdersResDTO, resp));
+  }
+
+  /**
+   * 添加订单
+   *
+   * @param {AddOrderReqDTO} req The request data (compatible with ReqDTO).
+   * @param {T} opts Extra request options.
+   * @returns {AddOrderResDTO} The response data (RespDTO).
+   */
+  public async addOrder(req: AddOrderReqDTO, opts?: T): Promise<AddOrderResDTO> {
+    return this._r(this._rArgs.m(req, opts)).then((resp) => this._rp.pat(AddOrderResDTO, resp));
+  }
+
+  /**
+   * 批量添加订单
+   *
+   * @param {AddAllOrderReqDTO} req The request data (compatible with ReqDTO).
+   * @param {T} opts Extra request options.
+   * @returns {AddAllOrderResDTO} The response data (RespDTO).
+   */
+  public async addAllOrder(req: AddAllOrderReqDTO, opts?: T): Promise<AddAllOrderResDTO> {
+    return this._r(this._rArgs.n(req, opts)).then((resp) => this._rp.pat(AddAllOrderResDTO, resp));
   }
 
   private _rArgs = {
@@ -357,6 +391,64 @@ export class ApiClient<T = undefined> {
           path: '/api/upload',
           req: null as null,
           resp: UploadResDTO,
+        },
+      };
+    },
+    l: (req: null, opts?: any) => {
+      return {
+        method: 'GET' as AllowedRequestMethod,
+        url: this._uf('/api/orders', {
+          param: {},
+          query: {},
+        }),
+        data: {},
+        extraOpts: opts,
+        metadata: {
+          name: 'getOrders',
+          method: 'GET',
+          path: '/api/orders',
+          req: null as null,
+          resp: GetOrdersResDTO,
+        },
+      };
+    },
+    m: (req: AddOrderReqDTO, opts?: any) => {
+      return {
+        method: 'POST' as AllowedRequestMethod,
+        url: this._uf('/api/orders/add', {
+          param: {},
+          query: {},
+        }),
+        data: {
+          item: req.item,
+        },
+        extraOpts: opts,
+        metadata: {
+          name: 'addOrder',
+          method: 'POST',
+          path: '/api/orders/add',
+          req: AddOrderReqDTO,
+          resp: AddOrderResDTO,
+        },
+      };
+    },
+    n: (req: AddAllOrderReqDTO, opts?: any) => {
+      return {
+        method: 'POST' as AllowedRequestMethod,
+        url: this._uf('/api/orders/addAll', {
+          param: {},
+          query: {},
+        }),
+        data: {
+          items: req.items,
+        },
+        extraOpts: opts,
+        metadata: {
+          name: 'addAllOrder',
+          method: 'POST',
+          path: '/api/orders/addAll',
+          req: AddAllOrderReqDTO,
+          resp: AddAllOrderResDTO,
         },
       };
     },

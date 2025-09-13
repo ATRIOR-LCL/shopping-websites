@@ -8,6 +8,7 @@ export class CartDTO extends ItemDTO {
     super();
   }
   itemIndex!: number;
+  addTime: string;
 }
 
 export class GetCartReqDTO {

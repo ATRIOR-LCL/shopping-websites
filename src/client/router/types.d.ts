@@ -16,6 +16,7 @@ declare module '@vue/runtime-core' {
       to(target: 'HomeView'): BwcxVueRouterActions;
       to(target: 'LoginView'): BwcxVueRouterActions;
       to(target: 'ProfileView'): BwcxVueRouterActions;
+      to(target: 'OrdersView'): BwcxVueRouterActions;
     };
   }
 }

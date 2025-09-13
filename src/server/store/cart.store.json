@@ -1,23 +1,7 @@
 [
   {
     "owner": "atrior",
-    "rows": [
-      {
-        "itemId": 2,
-        "itemEmoji": "🧀",
-        "itemName": "小奶酪",
-        "description": "来点奶酪",
-        "price": 12.99,
-        "itemIndex": 1757694456488
-      },
-      {
-        "itemId": 2,
-        "itemEmoji": "🧀",
-        "itemName": "小奶酪",
-        "description": "来点奶酪",
-        "price": 12.99,
-        "itemIndex": 1757694456153
-      }
-    ]
+    "rows": [],
+    "count": 0
   }
 ]
