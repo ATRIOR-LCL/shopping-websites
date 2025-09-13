@@ -22,28 +22,28 @@ export default class CartController {
   ) {}
 
   /** routes */
-  @Api.Summary('Get cart items')
+  @Api.Summary('获取所有购物车商品')
   @Get('/cart')
   @Contract(null, GetCartResDTO)
   public async getCart() {
     return this.cartService.getCart();
   }
 
-  @Api.Summary('Add items to cart')
+  @Api.Summary('添加商品到购物车')
   @Post('/cart/add')
   @Contract(AddToCartReqDTO, AddToCartResDTO)
   public async addToCart(@Body() body: AddToCartReqDTO) {
    return this.cartService.addToCart(body.items);
   }
 
-  @Api.Summary('Clear cart')
+  @Api.Summary('清空购物车')
   @Post('/cart/clear')
   @Contract(null, ClearCartResDTO)
   public async clearCart() {
     return this.cartService.clearCart();
   }
 
-  @Api.Summary('Delete Single Item from cart')
+  @Api.Summary('删除购物车中的商品')
   @Post('/cart/deleteItem')
   @Contract(DeleteItemReqDTO, DeleteItemResDTO)
   public async deleteItem(@Body() req: DeleteItemReqDTO) {

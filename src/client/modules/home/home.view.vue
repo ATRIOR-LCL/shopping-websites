@@ -69,15 +69,15 @@ export default class HomeView extends Vue {
       this.cartState.items = res.cart.rows;
       this.cartState.count = res.cart.count;
       ElNotification.success({
-        title: 'Added to Cart',
-        message: `Successfully added ${payload.quantity} items to your cart.`,
+        title: '添加到购物车',
+        message: `成功添加 ${payload.quantity} 件商品到购物车。`,
         duration: 1000,
       });
     } catch (error) {
       console.error('Error adding to cart:', error);
       ElNotification.error({
-        title: 'Error',
-        message: 'Failed to add items to cart. Please try again.',
+        title: '错误',
+        message: '添加商品到购物车失败，请重试。',
         duration: 1000,
       });
     }

@@ -1,9 +1,7 @@
 <template>
-  <Head>
-    <title>页面不存在</title>
-  </Head>
-  <div class="flex flex-col items-center justify-center">
-    <h1 class="mt-10 text-2xl text-white">页面不存在</h1>
-    <a href="/" class="hover:underline">返回首页</a>
+  <div class="fallback">
+    <h1>404 - 页面未找到</h1>
+    <p>抱歉，您访问的页面不存在。</p>
+    <router-link to="/">返回首页</router-link>
   </div>
 </template>

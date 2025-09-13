@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Vue, Options } from 'vue-class-component';
-import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElIcon, ElAvatar, ElButton } from 'element-plus';
+import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElIcon, ElAvatar, ElButton, ElNotification } from 'element-plus';
 import { ArrowDown } from '@element-plus/icons-vue';
 import { ClientOnly } from 'vite-ssr';
 import { Prop } from 'vue-property-decorator';
@@ -37,17 +37,18 @@ export default class Head extends Vue {
   async handleLogout() {
     try {
       const res = await this.apiClient.logout();
-      console.log('Logout response:', res);
-
-      // 登出成功后跳转到登录页
-      if (res.success) {
-        this.$router.push('/login');
-      } else {
-        alert('Logout failed: ' + res.message);
-      }
+      this.$router.push('/login');
+      ElNotification.success({
+        title: '登出成功',
+        message: '您已成功登出。',
+        duration: 1000,
+      });
     } catch (error) {
-      console.error('Logout error:', error);
-      alert('Logout failed: Network error');
+      ElNotification.error({
+        title: '登出失败',
+        message: '网络错误，请稍后再试。',
+        duration: 1000,
+      });
     }
   }
   updated() {
@@ -72,8 +73,12 @@ export default class Head extends Vue {
           gap: 20px;
         "
       >
-      <el-button link  style="width: fit-content; height: fit-content; padding: 0; margin: 0;"><el-icon size="24" @click="this.$router.push('/cart')"><ShoppingTrolley /></el-icon></el-button>
-      <el-button link  style="width: fit-content; height: fit-content; padding: 0; margin: 0;"><el-icon size="24" @click="this.$router.push('/orders')"><Goods /></el-icon></el-button>
+        <el-button link style="width: fit-content; height: fit-content; padding: 0; margin: 0"
+          ><el-icon size="24" @click="this.$router.push('/cart')"><ShoppingTrolley /></el-icon
+        ></el-button>
+        <el-button link style="width: fit-content; height: fit-content; padding: 0; margin: 0"
+          ><el-icon size="24" @click="this.$router.push('/orders')"><Goods /></el-icon
+        ></el-button>
         <el-dropdown class="my-dropdown">
           <el-avatar :src="avatarUrl" :size="35" />
           <el-icon><ArrowDownBold /></el-icon>

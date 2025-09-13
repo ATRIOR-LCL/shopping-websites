@@ -36,28 +36,17 @@ export default class LoginView extends Vue {
         username: this.state.username,
         password: this.state.password,
       });
-      console.log('Login response:', res);
-
-      // 登录成功后跳转到首页
-      if (res.success) {
-        ElNotification.success({
-          title: '登录成功',
-          message: '欢迎回来，' + this.state.username + '！',
-          duration: 1000,
-        });
-        this.$router.push('/');
-      } else {
-        ElNotification.error({
-          title: '登录失败',
-          message: '请检查您的用户名和密码。',
-          duration: 1000,
-        });
-      }
+      ElNotification.success({
+        title: '登录成功',
+        message: '欢迎回来，' + this.state.username + '！',
+        duration: 1000,
+      });
+      this.$router.push('/');
     } catch (error) {
       console.error('Login error:', error);
       ElNotification.error({
         title: '登录失败',
-        message: '网络错误，请稍后再试。',
+        message: '请检查用户名和密码是否正确。',
         duration: 1000,
       });
     }
@@ -79,28 +68,18 @@ export default class LoginView extends Vue {
         password: this.state.password,
         confirmPassword: this.state.confirmPassword,
       });
-      console.log('Register response:', res);
-
-      if (res.success) {
-        ElNotification.success({
-          title: '注册成功',
-          message: '欢迎，' + this.state.username + '！请登录。',
-          duration: 1000,
-        });
-        this.state.isLoginPage = true;
-        this.handleReset();
-      } else {
-        ElNotification.error({
-          title: '注册失败',
-          message: res.message || '请重试。',
-          duration: 1000,
-        });
-      }
+      ElNotification.success({
+        title: '注册成功',
+        message: '欢迎，' + this.state.username + '！请登录。',
+        duration: 1000,
+      });
+      this.state.isLoginPage = true;
+      this.handleReset();
     } catch (error) {
       console.error('Register error:', error);
       ElNotification.error({
         title: '注册失败',
-        message: '网络错误，请稍后再试。',
+        message: '请检查账号密码是否符合要求。',
         duration: 1000,
       });
     }

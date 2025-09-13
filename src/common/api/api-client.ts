@@ -27,7 +27,7 @@ export class ApiClient<T = undefined> {
   }
 
   /**
-   * Get cart items
+   * 获取所有购物车商品
    *
    * @param {null} req The request data (compatible with ReqDTO).
    * @param {T} opts Extra request options.
@@ -38,7 +38,7 @@ export class ApiClient<T = undefined> {
   }
 
   /**
-   * Add items to cart
+   * 添加商品到购物车
    *
    * @param {AddToCartReqDTO} req The request data (compatible with ReqDTO).
    * @param {T} opts Extra request options.
@@ -49,7 +49,7 @@ export class ApiClient<T = undefined> {
   }
 
   /**
-   * Clear cart
+   * 清空购物车
    *
    * @param {null} req The request data (compatible with ReqDTO).
    * @param {T} opts Extra request options.
@@ -60,7 +60,7 @@ export class ApiClient<T = undefined> {
   }
 
   /**
-   * Delete Single Item from cart
+   * 删除购物车中的商品
    *
    * @param {DeleteItemReqDTO} req The request data (compatible with ReqDTO).
    * @param {T} opts Extra request options.

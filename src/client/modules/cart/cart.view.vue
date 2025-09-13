@@ -11,6 +11,7 @@ import { CartDTO } from '@common/modules/cart/cart.dto';
 import MyFooter from '@client/components/my-footer.vue';
 import { ApiClientType } from '@client/api';
 import { ClientOnly } from 'vite-ssr';
+import dayjs from 'dayjs';
 
 @View('/cart')
 @Options({
@@ -37,17 +38,16 @@ export default class CartContainer extends Vue {
         itemIndex,
       });
       ElNotification.success({
-        title: 'Item Removed',
-        message: 'The item has been removed from your cart.',
+        title: '移除商品',
+        message: '商品已从购物车中移除。',
         duration: 1000,
       });
-      console.log('Now Items:', _);
       this.cartItems = _.cart.rows;
     } catch (error) {
       console.error('Failed to remove item from cart:', error);
       ElNotification.error({
-        title: 'Error',
-        message: 'Failed to remove item from cart.',
+        title: '错误',
+        message: '从购物车中移除商品失败。',
         duration: 1000,
       });
     }
@@ -58,15 +58,14 @@ export default class CartContainer extends Vue {
       const res = await this.apiClient.clearCart();
       this.cartItems = res.cart.rows;
       ElNotification.success({
-        title: 'All Items Removed',
-        message: 'All items have been removed from your cart.',
+        title: '所有商品已移除',
+        message: '所有商品已从购物车中移除。',
         duration: 1000,
       });
     } catch (error) {
-      console.error('Failed to remove all items from cart:', error);
       ElNotification.error({
-        title: 'Error',
-        message: 'Failed to remove all items from cart.',
+        title: '错误',
+        message: '从购物车中移除所有商品失败。',
         duration: 1000,
       });
     }
@@ -82,15 +81,14 @@ export default class CartContainer extends Vue {
       });
       this.cartItems = cartRes.cart.rows;
       ElNotification.success({
-        title: 'Order Placed',
-        message: `Successfully placed an order for ${item.itemName}.`,
+        title: '订单已创建',
+        message: `成功为 ${item.itemName} 下单。`,
         duration: 1000,
       });
     } catch (error) {
-      console.error('Failed to place order:', error);
       ElNotification.error({
-        title: 'Error',
-        message: 'Failed to place order.',
+        title: '错误',
+        message: '下单失败。',
         duration: 1000,
       });
     }
@@ -104,15 +102,14 @@ export default class CartContainer extends Vue {
       await this.apiClient.clearCart();
       this.cartItems = [];
       ElNotification.success({
-        title: 'All Orders Placed',
-        message: 'Successfully placed all orders.',
+        title: '所有订单已创建',
+        message: '成功创建所有订单。',
         duration: 1000,
       });
     } catch (e) {
-      console.error('Failed to place all orders:', e);
       ElNotification.error({
-        title: 'Error',
-        message: 'Failed to place all orders.',
+        title: '错误',
+        message: '创建订单失败。',
         duration: 1000,
       });
     }
@@ -120,6 +117,11 @@ export default class CartContainer extends Vue {
 
   get getItems() {
     return this.cartItems;
+  }
+
+  formatDateTime(dateString: string): string {
+    if (!dateString) return '';
+    return dayjs(dateString).format('YYYY-MM-DD HH:mm:ss');
   }
 
   async asyncData({ apiClient }: AsyncDataOptions) {
@@ -157,7 +159,7 @@ export default class CartContainer extends Vue {
               <h3>{{ item.itemName }} {{ item.itemEmoji }}</h3>
               <p>{{ item.description }}</p>
               <p>Price: ${{ item.price }}</p>
-              <p>{{ item.addTime }}</p>
+              <p>{{ formatDateTime(item.addTime) }}</p>
             </div>
             <div
               style="
