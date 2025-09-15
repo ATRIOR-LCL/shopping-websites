@@ -1,6 +1,6 @@
 {
   "name": "shopping-websites",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "基于 TypeScript 的购物网站项目",
   "main": "index.js",
   "scripts": {

@@ -27,7 +27,7 @@ export default class OrdersController {
   /** routes */
   @Api.Summary('获取当前用户的订单')
   @Get('/orders')
-  @Contract(GetOrdersReqDTO, GetOrdersResDTO)
+  @Contract(null, GetOrdersResDTO)
   public async getOrders() {
     return this.ordersService.getOrders();
   }

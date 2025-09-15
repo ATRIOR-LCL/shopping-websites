@@ -8,8 +8,10 @@ export default class GuardNotPassExceptionHandler implements IBwcxExceptionHandl
   public catch(e: GuardNotPassException, ctx: RequestContext) {
     ctx.error(`GuardNotPassException caught: url: ${ctx.url}, ua: ${ctx.request.headers['user-agent']}, err:`, e);
 
-    // 如果是访问根路径且未登录，重定向到登录页面
-    if (ctx.path === '/' && !ctx.session?.user) {
+    // 只判断指定路由未登录时跳转到登录页面
+    const protectedRoutes = ['/', '/orders', '/cart', '/profile'];
+    if ((protectedRoutes.includes(ctx.path) || protectedRoutes.some(r => ctx.path.startsWith(r + '/')))
+      && !ctx.session?.user) {
       ctx.redirect('/login');
       return;
     }

@@ -10,7 +10,7 @@ import { GetCartResDTO, AddToCartReqDTO, AddToCartResDTO, ClearCartResDTO, Delet
 import { DemoGetReqDTO, DemoGetRespDTO } from '../modules/demo/demo.dto';
 import { ItemReqDTO, ItemResDTO } from '../modules/items/item.dto';
 import { LoginReqDTO, LoginResDTO, RegisterReqDTO, RegisterResDTO, SessionResDTO, UploadResDTO } from '../modules/login/login.dto';
-import { GetOrdersReqDTO, GetOrdersResDTO, AddOrderReqDTO, AddOrderResDTO, AddAllOrderReqDTO, AddAllOrderResDTO } from '../modules/orders/oders.dto';
+import { GetOrdersResDTO, AddOrderReqDTO, AddOrderResDTO, AddAllOrderReqDTO, AddAllOrderResDTO } from '../modules/orders/oders.dto';
 
 const urlcat = configureUrlcat({ arrayFormat: 'repeat' });
 
@@ -150,11 +150,11 @@ export class ApiClient<T = undefined> {
   /**
    * 获取当前用户的订单
    *
-   * @param {GetOrdersReqDTO} req The request data (compatible with ReqDTO).
+   * @param {null} req The request data (compatible with ReqDTO).
    * @param {T} opts Extra request options.
    * @returns {GetOrdersResDTO} The response data (RespDTO).
    */
-  public async getOrders(req: GetOrdersReqDTO, opts?: T): Promise<GetOrdersResDTO> {
+  public async getOrders(req?: null, opts?: T): Promise<GetOrdersResDTO> {
     return this._r(this._rArgs.l(req, opts)).then((resp) => this._rp.pat(GetOrdersResDTO, resp));
   }
 
@@ -405,7 +405,7 @@ export class ApiClient<T = undefined> {
         },
       };
     },
-    l: (req: GetOrdersReqDTO, opts?: any) => {
+    l: (req: null, opts?: any) => {
       return {
         method: 'GET' as AllowedRequestMethod,
         url: this._uf('/api/orders', {
@@ -418,7 +418,7 @@ export class ApiClient<T = undefined> {
           name: 'getOrders',
           method: 'GET',
           path: '/api/orders',
-          req: GetOrdersReqDTO,
+          req: null as null,
           resp: GetOrdersResDTO,
         },
       };

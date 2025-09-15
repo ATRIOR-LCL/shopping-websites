@@ -11,8 +11,11 @@ import {
   DeleteItemResDTO,
 } from '@common/modules/cart/cart.dto';
 import CartService from './cart.service';
+import { UseGuards } from 'bwcx-ljsm';
+import LoginGuard from '@server/guards/login.guard';
 
 @ApiController()
+@UseGuards(LoginGuard)
 export default class CartController {
   public constructor(
     @InjectCtx()

@@ -119,7 +119,6 @@ export default class CartService {
       );
     }
 
-    // 返回删除后的购物车状态
     const currentCart = this.getCurrentCartState(this.username);
     return {
       message: 'Item deleted successfully',
