@@ -15,6 +15,7 @@ import * as CryptoJS from 'crypto-js';
 import fs from 'fs';
 import path from 'path';
 import HttpException from '@server/exceptions/http.exception';
+import Database from '@server/lib/database';
 
 @ApiController()
 @UseMiddlewares(LoginMiddleware)
@@ -32,12 +33,13 @@ export default class LoginController {
     console.log('login called with:', req);
 
     try {
-      // 读取用户数据文件
-      const userStorePath = path.join(__dirname, '../../store/user.store.json');
-      const userData = JSON.parse(fs.readFileSync(userStorePath, 'utf8'));
+      // 从数据库查找用户
+      const users = await Database.query(
+        'SELECT * FROM users WHERE username = ?',
+        [req.username]
+      );
 
-      // 查找用户
-      const user = userData.users.find((u: any) => u.username === req.username);
+      const user = users[0];
       if (!user) {
         this.ctx.status = 401;
         throw new HttpException(401);
@@ -50,17 +52,17 @@ export default class LoginController {
         throw new HttpException(401);
       }
 
-      // 登录成功，设置session
+      // 登录成功，设置会话
       this.ctx.session.user = {
         username: user.username,
         loginTime: new Date().toISOString(),
       };
-      this.ctx.session.userId = user.userId;
+      this.ctx.session.userId = user.user_id;
 
       return {
-        rows: [{ username: user.username, password: '' }], // 不返回密码
-        message: '登录成功',
         success: true,
+        rows: [],
+        message: 'Login successful',
       };
     } catch (error) {
       console.error('登录过程中发生错误:', error);
@@ -85,13 +87,13 @@ export default class LoginController {
         throw new HttpException(400);
       }
 
-      // 读取用户数据文件
-      const userStorePath = path.join(__dirname, '../../store/user.store.json');
-      const userData = JSON.parse(fs.readFileSync(userStorePath, 'utf8'));
-
       // 检查用户名是否已存在
-      const existingUser = userData.users.find((u: any) => u.username === req.username);
-      if (existingUser) {
+      const existingUsers = await Database.query(
+        'SELECT * FROM users WHERE username = ?',
+        [req.username]
+      );
+
+      if (existingUsers.length > 0) {
         this.ctx.status = 409;
         throw new HttpException(409);
       }
@@ -102,33 +104,25 @@ export default class LoginController {
       // 加密密码
       const hashedPassword = CryptoJS.MD5(req.password).toString();
 
-      // 创建新用户（使用默认头像）
-      const newUser = {
-        userId: newUserId,
-        username: req.username,
-        password: hashedPassword,
-        avatar: '/avatar/default.png',
-      };
-
-      // 添加到用户数据
-      userData.users.push(newUser);
-
-      // 写回文件
-      fs.writeFileSync(userStorePath, JSON.stringify(userData, null, 2));
+      // 插入新用户到数据库
+      await Database.query(
+        'INSERT INTO users (user_id, username, password, avatar) VALUES (?, ?, ?, ?)',
+        [newUserId, req.username, hashedPassword, '/avatar/default.png']
+      );
 
       // 自动登录新用户
       this.ctx.session.user = {
-        username: newUser.username,
+        username: req.username,
         loginTime: new Date().toISOString(),
       };
-      this.ctx.session.userId = newUser.userId;
+      this.ctx.session.userId = newUserId;
 
       return {
         success: true,
         message: '注册成功',
         user: {
-          userId: newUser.userId,
-          username: newUser.username,
+          userId: newUserId,
+          username: req.username,
         },
       };
     } catch (error) {
@@ -156,38 +150,37 @@ export default class LoginController {
   @Api.Summary('获取用户会话信息')
   @Get('/getSession')
   @Contract(null, SessionResDTO)
-  public getSession() {
+  public async getSession() {
     if (this.ctx.session.user) {
-      // 从用户存储中获取完整的用户信息，包括头像
-      const userStorePath = path.join(__dirname, '../../store/user.store.json');
-      let userData;
-
       try {
-        userData = JSON.parse(fs.readFileSync(userStorePath, 'utf8'));
+        // 从数据库获取完整的用户信息，包括头像
+        const users = await Database.query(
+          'SELECT * FROM users WHERE username = ?',
+          [this.ctx.session.user.username]
+        );
+
+        const user = users[0];
+        if (user) {
+          return {
+            success: true,
+            data: {
+              userId: user.user_id,
+              username: user.username,
+              avatar: user.avatar || null,
+            },
+          };
+        } else {
+          return {
+            success: false,
+            message: '用户不存在',
+            data: null,
+          };
+        }
       } catch (error) {
-        console.error('读取用户数据失败:', error);
+        console.error('获取用户信息失败:', error);
         return {
           success: false,
           message: '获取用户信息失败',
-          data: null,
-        };
-      }
-
-      const user = userData.users.find((u: any) => u.username === this.ctx.session.user.username);
-
-      if (user) {
-        return {
-          success: true,
-          data: {
-            userId: user.userId,
-            username: user.username,
-            avatar: user.avatar || null, // 如果没有头像就返回 null
-          },
-        };
-      } else {
-        return {
-          success: false,
-          message: '用户不存在',
           data: null,
         };
       }
@@ -324,19 +317,24 @@ export default class LoginController {
       this.ctx.status = 500;
       reject(new HttpException(500));
     });
-  }  /**
+  }
+
+  /**
    * 更新用户头像信息到数据库
    */
   private async updateUserAvatar(avatarPath: string): Promise<void> {
     console.log('更新用户头像到数据库:', avatarPath);
 
-    const userStorePath = path.join(__dirname, '../../store/user.store.json');
-    const userData = JSON.parse(fs.readFileSync(userStorePath, 'utf8'));
+    try {
+      // 获取用户当前头像
+      const users = await Database.query(
+        'SELECT avatar FROM users WHERE username = ?',
+        [this.ctx.session.user.username]
+      );
 
-    const user = userData.users.find((u: any) => u.username === this.ctx.session.user.username);
-    if (user) {
-      // 删除旧头像文件（如果不是默认头像）
-      if (user.avatar && user.avatar !== '/avatar/default.png') {
+      const user = users[0];
+      if (user && user.avatar && user.avatar !== '/avatar/default.png') {
+        // 删除旧头像文件
         const oldAvatarPath = path.join(process.cwd(), 'public', user.avatar);
         if (fs.existsSync(oldAvatarPath)) {
           fs.unlinkSync(oldAvatarPath);
@@ -344,10 +342,16 @@ export default class LoginController {
         }
       }
 
-      // 更新头像路径
-      user.avatar = avatarPath;
-      fs.writeFileSync(userStorePath, JSON.stringify(userData, null, 2));
+      // 更新头像路径到数据库
+      await Database.query(
+        'UPDATE users SET avatar = ? WHERE username = ?',
+        [avatarPath, this.ctx.session.user.username]
+      );
+
       console.log('用户头像信息更新成功');
+    } catch (error) {
+      console.error('更新用户头像失败:', error);
+      throw error;
     }
   }
 }

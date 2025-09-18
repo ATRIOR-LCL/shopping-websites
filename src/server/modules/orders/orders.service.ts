@@ -1,10 +1,9 @@
 import { Service, InjectCtx, RequestContext } from 'bwcx-ljsm';
-import fs from 'fs';
-import path from 'path';
 import { ItemDTO } from '@common/modules/items/item.dto';
 import { GetOrdersResDTO } from '@common/modules/orders/oders.dto';
 import LogicException from '@server/exceptions/logic.exception';
 import { ErrCode } from '@common/enums/err-code.enum';
+import Database from '@server/lib/database';
 
 @Service()
 export default class OrdersService {
@@ -21,26 +20,38 @@ export default class OrdersService {
         throw new Error('User not logged in');
       }
 
-      const ordersData = this.ordersData;
+      // 从数据库获取用户订单数据
+      const orderItems = await Database.query(
+        'SELECT * FROM orders WHERE user_id = (SELECT user_id FROM users WHERE username = ?) ORDER BY order_time DESC',
+        [username]
+      );
 
-      // 查找当前用户的订单
-      const userOrders = ordersData.find((orderGroup: any) => orderGroup.owner === username);
-
-      if (!userOrders) {
+      if (!orderItems.length) {
         return { count: 0, rows: [] };
       }
 
       // 按 orderDate 分组订单
       const groupedOrders = new Map<string, any[]>();
 
-      userOrders.rows.forEach((order: any) => {
-        // 从 orderTime 提取日期部分 (YYYY-MM-DD)
-        const orderDate = order.orderTime ? order.orderTime.split('T')[0] : '未填写日期';
+      orderItems.forEach((order: any) => {
+        // 从 order_time 提取日期部分 (YYYY-MM-DD)
+        const orderDate = order.order_time ? order.order_time.toISOString().split('T')[0] : '未填写日期';
 
         if (!groupedOrders.has(orderDate)) {
           groupedOrders.set(orderDate, []);
         }
-        groupedOrders.get(orderDate)!.push(order);
+        
+        groupedOrders.get(orderDate)!.push({
+          orderId: order.order_id,
+          item: {
+            itemId: order.item_id,
+            itemName: order.item_name,
+            itemEmoji: order.item_emoji,
+            price: parseFloat(order.price),
+            description: order.item_desc,
+          },
+          orderTime: order.order_time?.toISOString() || null,
+        });
       });
 
       // 转换为响应格式
@@ -56,7 +67,7 @@ export default class OrdersService {
         return b.orderDate.localeCompare(a.orderDate); // 最新日期在前
       });
 
-      return { count: userOrders.rows.length, rows };
+      return { count: orderItems.length, rows };
     } catch (error) {
       console.error('Failed to read orders data:', error);
       throw new LogicException(ErrCode.SystemError);
@@ -70,20 +81,23 @@ export default class OrdersService {
         throw new Error('User not logged in');
       }
 
-      const ordersData = this.ordersData;
+      const orderId = `order-${Date.now()}`;
 
-      // 获取或创建用户订单组
-      const userOrders = await this.getUserOrdersGroup(username, ordersData);
-
-      // 创建新订单
-      const newOrder = {
-        orderId: `order-${Date.now()}`,
-        item,
-        orderTime: new Date().toISOString(),
-      };
-
-      userOrders.rows.push(newOrder);
-      await fs.promises.writeFile(this.ordersFilePath, JSON.stringify(ordersData, null, 2), 'utf-8');
+      // 插入订单到数据库
+      await Database.query(
+        `INSERT INTO orders (order_id, user_id, item_id, item_name, item_emoji, item_desc, price, order_time) 
+         SELECT ?, user_id, ?, ?, ?, ?, ?, NOW() 
+         FROM users WHERE username = ?`,
+        [
+          orderId,
+          item.itemId,
+          item.itemName,
+          item.itemEmoji,
+          item.description,
+          item.price,
+          username
+        ]
+      );
 
       return { message: 'Order added successfully' };
     } catch (error) {
@@ -99,20 +113,27 @@ export default class OrdersService {
         throw new Error('User not logged in');
       }
 
-      const ordersData = this.ordersData;
-
-      // 获取或创建用户订单组
-      const userOrders = await this.getUserOrdersGroup(username, ordersData);
-
-      // 创建新订单数组
-      const newOrders = items.map((item, index) => ({
-        orderId: `order-${Date.now()}-${index}`,
-        item,
-        orderTime: new Date().toISOString(),
-      }));
-
-      userOrders.rows.push(...newOrders);
-      await fs.promises.writeFile(this.ordersFilePath, JSON.stringify(ordersData, null, 2), 'utf-8');
+      // 使用事务批量插入订单
+      await Database.transaction(async (connection) => {
+        for (const [index, item] of items.entries()) {
+          const orderId = `order-${Date.now()}-${index}`;
+          
+          await connection.execute(
+            `INSERT INTO orders (order_id, user_id, item_id, item_name, item_emoji, item_desc, price, order_time) 
+             SELECT ?, user_id, ?, ?, ?, ?, ?, NOW() 
+             FROM users WHERE username = ?`,
+            [
+              orderId,
+              item.itemId,
+              item.itemName,
+              item.itemEmoji,
+              item.description,
+              item.price,
+              username
+            ]
+          );
+        }
+      });
 
       return { message: 'Orders added successfully' };
     } catch (error) {
@@ -128,52 +149,17 @@ export default class OrdersService {
         throw new Error('User not logged in');
       }
 
-      const ordersData = this.ordersData;
-
-      // 查找当前用户的订单组
-      const userOrders = ordersData.find((orderGroup: any) => orderGroup.owner === username);
-
-      if (userOrders) {
-        userOrders.rows = []; // 清空订单
-        await fs.promises.writeFile(this.ordersFilePath, JSON.stringify(ordersData, null, 2), 'utf-8');
-      }
+      // 删除用户的所有订单
+      await Database.query(
+        'DELETE FROM orders WHERE user_id = (SELECT user_id FROM users WHERE username = ?)',
+        [username]
+      );
 
       return { message: 'Orders cleared successfully' };
     } catch (error) {
       console.error('Failed to clear orders:', error);
       throw new LogicException(ErrCode.SystemError);
     }
-  }
-
-  /**
-   * 获取或创建用户订单组
-   */
-  private async getUserOrdersGroup(username: string, allOrders: any[]): Promise<any> {
-    let userOrders = allOrders.find((orderGroup: any) => orderGroup.owner === username);
-
-    if (!userOrders) {
-      // 从用户数据文件中获取真实的 userId
-      const userStorePath = path.resolve(__dirname, '../../store/user.store.json');
-      const userData = JSON.parse(await fs.promises.readFile(userStorePath, 'utf-8'));
-      const user = userData.users.find((u: any) => u.username === username);
-
-      userOrders = {
-        owner: username,
-        userId: user?.userId || `user_${Date.now()}`, // 使用真实的 userId，如果没有则生成临时的
-        rows: []
-      };
-      allOrders.push(userOrders);
-    }
-
-    return userOrders;
-  }
-
-  get ordersFilePath() {
-    return path.resolve(__dirname, '../../store/orders.store.json');
-  }
-
-  get ordersData() {
-    return JSON.parse(fs.readFileSync(this.ordersFilePath, 'utf-8'));
   }
 
   get username() {
